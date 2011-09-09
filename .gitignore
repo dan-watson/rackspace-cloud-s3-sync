@@ -2,3 +2,4 @@
 *.swo
 db/*.db
 config/config.yaml
+logs/*.log
