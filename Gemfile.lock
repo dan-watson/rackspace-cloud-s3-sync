@@ -1,23 +1,16 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (3.1.0)
-      multi_json (~> 1.0)
     aws-s3 (0.6.2)
       builder
       mime-types
       xml-simple
     builder (3.0.0)
-    json (1.5.4)
-    mime-types (1.16)
-    multi_json (1.0.3)
-    rackspace-cloud (0.6)
-      activesupport (>= 2.3.4)
-      json
-      rest-client (>= 1.0.3)
-    rest-client (1.6.7)
+    cloudfiles (1.4.17)
       mime-types (>= 1.16)
+    mime-types (1.16)
     sequel (3.27.0)
+    sqlite3 (1.3.4)
     xml-simple (1.1.0)
 
 PLATFORMS
@@ -25,5 +18,6 @@ PLATFORMS
 
 DEPENDENCIES
   aws-s3
-  rackspace-cloud
+  cloudfiles
   sequel
+  sqlite3
