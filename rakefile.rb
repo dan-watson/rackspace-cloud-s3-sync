@@ -9,3 +9,12 @@ namespace :db do
     FileUtils.rm_rf(File.dirname(__FILE__) + "/db/ganymede.db")
   end
 end 
+
+namespace :byebye do
+  namespace :rackspace do
+    desc "sync your rackspace cloud files to amazon s3"
+    task :sync do
+      puts "Call the main application once implemented"
+    end
+  end
+end
