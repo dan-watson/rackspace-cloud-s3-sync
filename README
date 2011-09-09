@@ -1,7 +1,9 @@
-1) rake db:migrate
-2) copy config/config.example.yaml to config/config.yaml
-3) enter your rackspace and s3 credentials into config.yaml
-4) rake byebye:rackspace:sync
+=== Rackspace Cloudfiles to Amazon S3 migration
+
+  1) rake db:migrate
+  2) copy config/config.example.yaml to config/config.yaml
+  3) enter your rackspace and s3 credentials into config.yaml
+  4) rake byebye:rackspace:sync
 
 This synching tool is not usable as I am currently developing it!
 Will be usable by 14th September 2011
