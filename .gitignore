@@ -1,3 +1,4 @@
-*.swp
+*swp
 *.swo
 db/*.db
+config/config.yaml
