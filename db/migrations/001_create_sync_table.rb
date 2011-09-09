@@ -2,7 +2,7 @@ class CreateSyncTable < Sequel::Migration
   def up
    create_table   :syncs do
      primary_key  :id
-     String       :bucket
+     String       :bucket #this is the same as the Rackspace Cloud Files container
      String       :file_name
      String       :file_extention
      String       :download_location
