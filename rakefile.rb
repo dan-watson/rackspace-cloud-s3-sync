@@ -11,10 +11,8 @@ namespace :db do
 end 
 
 namespace :byebye do
-  namespace :rackspace do
-    desc "sync your rackspace cloud files to amazon s3"
-    task :sync do
-      puts "Call the main application once implemented"
-    end
+  desc "sync your rackspace cloud files to amazon s3"
+  task :rackspace do
+   exec "./run.sh"
   end
 end

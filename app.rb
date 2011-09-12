@@ -16,14 +16,14 @@ class RackSpaceCloudS3Sync
     @rackspace = Rackspace.new
     @hydra = Typhoeus::Hydra.new(:max_concurrency => (opts[:threads] || 20))
     @statuses = opts[:statuses] || 0
-    @queue_number_of_items = opts[:queue_number_of_items] || 10
+    @queue_number_of_items = opts[:queue_number_of_items] || 20
     @with_build_database = opts[:with_build_database] || false
     @bucket_prefix = opts[:bucket_prefix] || "dna"
   end
 
   def build
     begin
-      build_database_from_rackspace if @with_build_database
+      build_database_from_rackspace if @with_build_database || Sync.count == 0
       Sync.limit(@queue_number_of_items).where(:status => @statuses).all.each do |item|
         queue item
       end
