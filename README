@@ -3,7 +3,15 @@
   1) rake db:migrate
   2) copy config/config.example.yaml to config/config.yaml
   3) enter your rackspace and s3 credentials into config.yaml
-  4) rake byebye:rackspace:sync
+  4) ./run.sh
 
-This synching tool is not usable as I am currently developing it!
-Will be usable by 14th September 2011
+=== Configuration
+
+To change defaults just edit the run.rb as follows:-
+  
+  require File.join(File.dirname(__FILE__), "app")
+  RackSpaceCloudS3Sync.new(:threads => 20,                  #Number of conncurrent downloads
+                           :statuses => [0,3],              #0 pending - 1 inprogress - 2 success - 3 failed
+                           :queue_number_of_items => 10,    #items to queue at one time
+                           :with_build_database => true,    #set to true if you want to pick up new items added to CloudFiles or it is first run!
+                           :bucket_prefix => "your-prefix") #Prefix your bucket name

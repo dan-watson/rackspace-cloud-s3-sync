@@ -7,7 +7,7 @@ class CreateSyncTable < Sequel::Migration
      String       :file_extention
      String       :download_location
      String       :failed_reason
-     Integer      :status #0 pending - 1 success - 2 failed
+     Integer      :status #0 pending - 1 inprogress - 2 success - 3 failed
      DateTime     :created_at
      DateTime     :updated_at
    end 

@@ -5,20 +5,22 @@ class Log
   include Singleton
 
   def error message
-    logger.error message
+    loggers.each{ |logger| logger.error message }
   end
 
   def info message
-    logger.info message
+    loggers.each{ |logger| logger.info message }
   end
 
   def fatal message
-    logger.fatal message
+    loggers.each{ |logger| logger.fatal message }
   end
 
   private
-  def logger
-    @logger ||= Logger.new(Dir.pwd + "/logs/log.log")
+  def loggers
+    @loggers = []
+    @loggers << Logger.new(Dir.pwd + "/logs/log.log")
+    @loggers << Logger.new(STDOUT)
   end
 end
 

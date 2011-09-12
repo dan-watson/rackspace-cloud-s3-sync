@@ -1,40 +1,79 @@
 require 'rubygems'
-require 'aws/s3'
-require 'cloudfiles'
+require 'typhoeus'
 require File.join(File.dirname(__FILE__), "app", "configuration")
 require File.join(File.dirname(__FILE__), "app", "models", "sync")
 require File.join(File.dirname(__FILE__), "app", "logger")
+require File.join(File.dirname(__FILE__), "app", "apis", "amazon_s3")
+require File.join(File.dirname(__FILE__), "app", "apis", "rackspace")
+require File.join(File.dirname(__FILE__), "app", "helpers", "file_helper")
 
 
 class RackSpaceCloudS3Sync
-  def initialize
-    @rackspace_connection = CloudFiles::Connection.new(:username => Configuration.rackspace_user_id, :api_key => Configuration.rackspace_key)
-    @rackspace_storage_host = @rackspace_connection.storagehost
-    AWS::S3::Base.establish_connection!(:access_key_id => Configuration.amazon_s3_key_id, :secret_access_key => Configuration.amazon_s3_secret_access_key)
+  include FileHelper
+
+  def initialize(opts = {})
+    @amazon = AmazonS3.new
+    @rackspace = Rackspace.new
+    @hydra = Typhoeus::Hydra.new(:max_concurrency => (opts[:threads] || 20))
+    @statuses = opts[:statuses] || 0
+    @queue_number_of_items = opts[:queue_number_of_items] || 10
+    @with_build_database = opts[:with_build_database] || false
+    @bucket_prefix = opts[:bucket_prefix] || "dna"
   end
 
+  def build
+    begin
+      build_database_from_rackspace if @with_build_database
+      Sync.limit(@queue_number_of_items).where(:status => @statuses).all.each do |item|
+        queue item
+      end
+      @hydra.run
+    rescue StandardError => bang
+      @log.error bang
+    end
+  end
+
+  private
   def build_database_from_rackspace
-     
+    Log.instance.info "Started to sync rackspace file database"
+    
+    @rackspace.containers.each do |container|
+      Log.instance.info "Starting to pull items for #{container}"
+      container_hash = @rackspace.container(container)
+      container_hash[:objects].each do |item|
+        Log.instance.info "Working with item - #{item} in #{container}"
+        unless Sync.find(:bucket => container, :file_name => item)
+          Log.instance.info "Adding #{item} for container - #{container}"
+          Sync.create(:bucket => container,
+                      :file_name => item,
+                      :file_extention => @rackspace.item_content_type(item),
+                      :download_location => @rackspace.build_item_uri(container_hash[:base_url], item),
+                      :status => 0) 
+        else
+          Log.instance.info "#{item} in container - #{container} has already been added to the sync database"
+        end
+      end
+    end
   end
 
-  def sync
+  def queue sync_item
+   sync_item.in_progress!
+   request = Typhoeus::Request.new(URI.encode(sync_item.download_location), :follow_location => true)
 
+   request.on_complete do |response|
+     if response.success?
+       write_file(sync_item.file_name, response.body)
+       success = @amazon.upload(@bucket_prefix, sync_item.bucket, sync_item.file_name)
+       if success
+         sync_item.success!
+         delete_file(sync_item.file_name)
+       else
+         sync_item.failed!
+       end
+     else
+       sync_item.failed!
+     end
+   end
+   @hydra.queue request
   end
-
-  def rackspace_containers
-    @rackspace_connection.containers
-  end
-
-  def rackspace_container name
-    @rackspace_connection.container(name).objects
-  end
-
-  def build_item_uri container, name
-   "http://#{@rackspace_storage_host}/#{container}/#{name}" 
-  end
-
-  def item_content_type item
-     
-  end
-
 end
