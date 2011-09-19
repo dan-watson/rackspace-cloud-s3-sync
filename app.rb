@@ -29,7 +29,7 @@ class RackSpaceCloudS3Sync
       end
       @hydra.run
     rescue StandardError => bang
-      @log.error bang
+      Log.instance.error bang
     end
   end
 
