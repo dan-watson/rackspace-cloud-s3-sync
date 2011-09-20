@@ -15,4 +15,5 @@ To change defaults just edit the run.rb as follows:-
                            :queue_number_of_items => 10,    #items to queue at one time
                            :with_build_database => true,    #set to true if you want to pick up new items added 
                                                             #to CloudFiles.. No need to set this the first time it runs
-                           :bucket_prefix => "your-prefix") #Prefix your bucket name
+                           :bucket_prefix => "your-prefix", #Prefix your bucket name
+                           :ignore_buckets => %w(.CDN_ACCESS_LOGS some_other_bucket)) #ignore buckets at rackspace

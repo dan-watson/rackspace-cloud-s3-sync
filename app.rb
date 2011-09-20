@@ -18,7 +18,8 @@ class RackSpaceCloudS3Sync
     @statuses = opts[:statuses] || 0
     @queue_number_of_items = opts[:queue_number_of_items] || 20
     @with_build_database = opts[:with_build_database] || false
-    @bucket_prefix = opts[:bucket_prefix] || "dna"
+    @bucket_prefix = opts[:bucket_prefix] || "dna-bucket-"
+    @ignore_buckets = opts[:ignore_buckets] || []
   end
 
   def build
@@ -37,7 +38,7 @@ class RackSpaceCloudS3Sync
   def build_database_from_rackspace
     Log.instance.info "Started to sync rackspace file database"
     
-    @rackspace.containers.each do |container|
+    @rackspace.containers(:ignore_buckets => @ignore_buckets).each do |container|
       Log.instance.info "Starting to pull items for #{container}"
       container_hash = @rackspace.container(container)
       container_hash[:objects].each do |item|

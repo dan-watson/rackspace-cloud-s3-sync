@@ -7,8 +7,9 @@ class Rackspace
     @rackspace_storage_host = @rackspace_connection.storagehost
   end
 
-  def containers
-    @rackspace_connection.containers
+  def containers(opts = {})
+    ignore_buckets = opts[:ignore_buckets] || []
+    @rackspace_connection.containers.delete_if{|i| ignore_buckets.include?(i) }
   end
 
   def container name

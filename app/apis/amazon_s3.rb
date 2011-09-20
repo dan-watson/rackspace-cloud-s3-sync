@@ -6,7 +6,7 @@ class AmazonS3
   end
 
   def upload bucket_prefix, bucket, file
-    bucket = "#{bucket_prefix}-#{bucket}"
+    bucket = "#{bucket_prefix}#{bucket}"
     Log.instance.info "Uploading #{file} to #{bucket}"
     AWS::S3::Bucket.create(bucket)
     response = AWS::S3::S3Object.store(file, open(File.dirname(__FILE__) + '/../../files/' + file), bucket, :access => :public_read)
