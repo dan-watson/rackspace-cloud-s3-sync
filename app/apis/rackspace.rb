@@ -12,9 +12,19 @@ class Rackspace
   end
 
   def container name
+    objects = []
+    marker = nil
+
+    while(true)
+     holder = @rackspace_connection.container(name).objects(:limit => 10000, :marker => marker)
+     objects << holder
+     marker = holder.last
+     break if holder.count < 10000
+    end
+
     { 
       :base_url => @rackspace_connection.container(name).cdn_url || "http://#{@rackspace_storage_host}/#{name}", 
-      :objects => @rackspace_connection.container(name).objects 
+      :objects => objects.flatten.uniq
     }
   end
 
