@@ -42,16 +42,12 @@ class RackSpaceCloudS3Sync
       Log.instance.info "Starting to pull items for #{container}"
       container_hash = @rackspace.container(container)
       container_hash[:objects].each do |item|
-        Log.instance.info "Working with item - #{item} in #{container}"
         unless Sync.find(:bucket => container, :file_name => item)
-          Log.instance.info "Adding #{item} for container - #{container}"
           Sync.create(:bucket => container,
                       :file_name => item,
                       :file_extention => @rackspace.item_content_type(item),
                       :download_location => @rackspace.build_item_uri(container_hash[:base_url], item),
                       :status => 0) 
-        else
-          Log.instance.info "#{item} in container - #{container} has already been added to the sync database"
         end
       end
     end
