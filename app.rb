@@ -20,6 +20,7 @@ class RackSpaceCloudS3Sync
     @with_build_database = opts[:with_build_database] || false
     @bucket_prefix = opts[:bucket_prefix] || "dna-bucket-"
     @ignore_buckets = opts[:ignore_buckets] || []
+    @region = opts[:region] || "eu"
   end
 
   def build
@@ -60,7 +61,7 @@ class RackSpaceCloudS3Sync
    request.on_complete do |response|
      if response.success?
        write_file(sync_item.file_name, response.body)
-       success = @amazon.upload(@bucket_prefix, sync_item.bucket, sync_item.file_name)
+       success = @amazon.upload(@bucket_prefix, sync_item.bucket, sync_item.file_name, @region)
        if success
          sync_item.success!
          delete_file(sync_item.file_name)
