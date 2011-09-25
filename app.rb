@@ -58,7 +58,7 @@ class RackSpaceCloudS3Sync
    sync_item.in_progress!
 
    begin
-     URI.encode(sync_item.download_location)
+     URI.parse(sync_item.download_location)
    rescue
      sync_item.failed!
      return
