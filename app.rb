@@ -56,9 +56,9 @@ class RackSpaceCloudS3Sync
 
   def queue sync_item
    sync_item.in_progress!
-
+   
    begin
-     URI.parse(sync_item.download_location)
+     URI.parse(URI.encode(sync_item.download_location))
    rescue
      sync_item.failed!
      return
