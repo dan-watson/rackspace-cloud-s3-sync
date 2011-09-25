@@ -56,6 +56,14 @@ class RackSpaceCloudS3Sync
 
   def queue sync_item
    sync_item.in_progress!
+
+   begin
+     URI.encode(sync_item.download_location)
+   rescue
+     sync_item.failed!
+     return
+   end
+
    request = Typhoeus::Request.new(URI.encode(sync_item.download_location), :follow_location => true)
 
    request.on_complete do |response|

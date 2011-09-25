@@ -11,6 +11,9 @@ class AmazonS3
   end
 
   def upload bucket_prefix, bucket, file, region
+    #Amazon does not like underscores
+    bucket.gsub!("_", "-")
+
     bucket = "#{bucket_prefix}#{bucket}"
     Log.instance.info "Uploading #{file} to #{bucket}"
     begin
